@@ -1,46 +1,22 @@
 plugins {
-	id "java"
-	id "org.springframework.boot" version "4.1.1"
-	id "io.spring.dependency-management" version "1.1.7"
+    id 'java'
+    id 'org.springframework.boot' version '4.1.1'
+    id 'io.spring.dependency-management' version '1.1.7'
 }
-
-group = "ru.ulstu.is"
-version = "0.0.1-SNAPSHOT"
-description = "My demo server app"
-def targetJDK = JavaVersion.VERSION_24
-
-defaultTasks "bootRun"
-
-jar {
-	enabled = false
-}
-
-bootJar {
-	archiveFileName = String.format("%s-%s.jar", rootProject.name, version)
-}
-
-def currentVersion = System.getProperty("java.specification.version")
-assert System.properties["java.specification.version"] in ["21", "24", "25"] : "Java 21, 25 version required. Current version: ${currentVersion}"
-tasks.withType(JavaCompile).configureEach {
-	options.release.set(Integer.parseInt(targetJDK.majorVersion))
-}
-
-repositories {
-	mavenCentral()
-}
-
-ext {
-	springdocVersion = "3.1.0"
-}
-
+group = 'ru.ulstu.is'
+version = '0.0.1-SNAPSHOT'
+java { toolchain { languageVersion = JavaLanguageVersion.of(24) } }
+repositories { mavenCentral() }
 dependencies {
-	implementation "org.springframework.boot:spring-boot-starter-webmvc"
-	implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${springdocVersion}"
-
-	testImplementation "org.springframework.boot:spring-boot-starter-webmvc-test"
-	testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+    implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.0'
+    runtimeOnly 'com.h2database:h2:2.5.252'
+    runtimeOnly 'org.springframework.boot:spring-boot-h2console'
+    testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-validation-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
-
-tasks.named("test") {
-	useJUnitPlatform()
-}
+tasks.named('test') { useJUnitPlatform() }

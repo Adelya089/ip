@@ -1,52 +1,19 @@
 package ru.ulstu.is.server.api.genre;
 
 import java.util.List;
-
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 import ru.ulstu.is.server.configuration.Constants;
+import ru.ulstu.is.server.entity.NamedCountProjection;
 import ru.ulstu.is.server.service.GenreService;
-
-@RestController
-@RequestMapping(Constants.API_URL + GenreController.URL)
+@RestController @RequestMapping(Constants.API_URL + "/genres")
 public class GenreController {
-    public static final String URL = "/genres";
-    private final GenreService genreService;
-
-    public GenreController(GenreService genreService) {
-        this.genreService = genreService;
-    }
-
-    @GetMapping
-    public List<GenreRs> getAll() {
-        return genreService.getAll();
-    }
-
-    @GetMapping("/{id}")
-    public GenreRs get(@PathVariable Long id) {
-        return genreService.get(id);
-    }
-
-    @PostMapping
-    public GenreRs create(@RequestBody @Valid GenreRq dto) {
-        return genreService.create(dto);
-    }
-
-    @PutMapping("/{id}")
-    public GenreRs update(@PathVariable Long id, @RequestBody @Valid GenreRq dto) {
-        return genreService.update(id, dto);
-    }
-
-    @DeleteMapping("/{id}")
-    public GenreRs delete(@PathVariable Long id) {
-        return genreService.delete(id);
-    }
+    private final GenreService service;
+    public GenreController(GenreService service) { this.service = service; }
+    @GetMapping public List<GenreRs> getAll() { return service.getAll(); }
+    @GetMapping("/stats") public List<NamedCountProjection> stats(@RequestParam(defaultValue="0") long minCount) { return service.stats(minCount); }
+    @GetMapping("/{id}") public GenreRs get(@PathVariable Long id) { return service.get(id); }
+    @PostMapping public GenreRs create(@RequestBody @Valid GenreRq dto) { return service.create(dto); }
+    @PutMapping("/{id}") public GenreRs update(@PathVariable Long id, @RequestBody @Valid GenreRq dto) { return service.update(id,dto); }
+    @DeleteMapping("/{id}") public GenreRs delete(@PathVariable Long id) { return service.delete(id); }
 }

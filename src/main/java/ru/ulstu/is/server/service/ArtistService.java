@@ -1,61 +1,48 @@
 package ru.ulstu.is.server.service;
 
 import java.util.List;
-
 import org.springframework.stereotype.Service;
-
-import ru.ulstu.is.server.api.artist.ArtistRq;
-import ru.ulstu.is.server.api.artist.ArtistRs;
-import ru.ulstu.is.server.entity.ArtistEntity;
-import ru.ulstu.is.server.entity.GenreEntity;
-import ru.ulstu.is.server.error.NotFoundException;
+import org.springframework.transaction.annotation.Transactional;
+import ru.ulstu.is.server.api.artist.*;
+import ru.ulstu.is.server.entity.*;
 import ru.ulstu.is.server.repository.ArtistRepository;
-
-@Service
-public class ArtistService {
-    private final ArtistRepository repository;
+import ru.ulstu.is.server.error.NotFoundException;
+@Service public class ArtistService {
+    private final ArtistRepository repo;
     private final GenreService genreService;
-
-    public ArtistService(ArtistRepository repository, GenreService genreService) {
-        this.repository = repository;
-        this.genreService = genreService;
-    }
-
-    public ArtistEntity getEntity(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Artist", id));
-    }
-
-    public List<ArtistRs> getAll() {
-        return repository.findAll().stream().map(ArtistRs::fromEntity).toList();
-    }
-
-    public ArtistRs get(Long id) {
-        final ArtistEntity entity = getEntity(id);
-        return ArtistRs.fromEntity(entity);
-    }
-
+    public ArtistService(ArtistRepository repo, GenreService genreService) { this.repo=repo; this.genreService=genreService; }
+    @Transactional(readOnly = true)
+    public ArtistEntity getEntity(Long id) { return repo.findById(id).orElseThrow(() -> new NotFoundException("Artist", id)); }
+    @Transactional(readOnly = true)
+    public List<ArtistRs> getAll() { return repo.findAll().stream().map(ArtistRs::fromEntity).toList(); }
+    @Transactional(readOnly = true)
+    public ArtistRs get(Long id) { return ArtistRs.fromEntity(getEntity(id)); }
+    @Transactional
     public ArtistRs create(ArtistRq dto) {
-        final GenreEntity genre = genreService.getEntity(dto.genreId());
-        final ArtistEntity entity = new ArtistEntity();
-        entity.setName(dto.name());
-        entity.setCountry(dto.country());
-        entity.setGenre(genre);
-        return ArtistRs.fromEntity(repository.save(entity));
+        ArtistEntity e = new ArtistEntity();
+        e.setName(dto.name());
+        e.setCountry(dto.country());
+        e.setGenre(genreService.getEntity(dto.genreId()));
+        return ArtistRs.fromEntity(repo.saveAndFlush(e));
     }
-
+    @Transactional
     public ArtistRs update(Long id, ArtistRq dto) {
-        final GenreEntity genre = genreService.getEntity(dto.genreId());
-        final ArtistEntity entity = getEntity(id);
-        entity.setName(dto.name());
-        entity.setCountry(dto.country());
-        entity.setGenre(genre);
-        return ArtistRs.fromEntity(repository.save(entity));
+        ArtistEntity e = getEntity(id);
+        e.setName(dto.name());
+        e.setCountry(dto.country());
+        e.setGenre(genreService.getEntity(dto.genreId()));
+        return ArtistRs.fromEntity(repo.saveAndFlush(e));
     }
-
+    @Transactional
     public ArtistRs delete(Long id) {
-        final ArtistEntity entity = getEntity(id);
-        repository.delete(entity);
-        return ArtistRs.fromEntity(entity);
+        ArtistEntity e = getEntity(id);
+        if (!e.getAlbums().isEmpty())
+            throw new IllegalArgumentException("Нельзя удалить объект со связанными записями");
+        ArtistRs result = ArtistRs.fromEntity(e);
+        repo.delete(e);
+        repo.flush();
+        return result;
     }
+    @Transactional(readOnly = true)
+    public List<NamedCountProjection> stats(String filter) { return repo.stats(filter); }
 }

@@ -1,65 +1,52 @@
 package ru.ulstu.is.server.service;
 
 import java.util.List;
-
 import org.springframework.stereotype.Service;
-
-import ru.ulstu.is.server.api.album.AlbumRq;
-import ru.ulstu.is.server.api.album.AlbumRs;
-import ru.ulstu.is.server.entity.AlbumEntity;
-import ru.ulstu.is.server.entity.ArtistEntity;
-import ru.ulstu.is.server.error.NotFoundException;
+import org.springframework.transaction.annotation.Transactional;
+import ru.ulstu.is.server.api.album.*;
+import ru.ulstu.is.server.entity.*;
 import ru.ulstu.is.server.repository.AlbumRepository;
-
-@Service
-public class AlbumService {
-    private final AlbumRepository repository;
+import ru.ulstu.is.server.error.NotFoundException;
+@Service public class AlbumService {
+    private final AlbumRepository repo;
     private final ArtistService artistService;
-
-    public AlbumService(AlbumRepository repository, ArtistService artistService) {
-        this.repository = repository;
-        this.artistService = artistService;
-    }
-
-    public AlbumEntity getEntity(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Album", id));
-    }
-
-    public List<AlbumRs> getAll() {
-        return repository.findAll().stream().map(AlbumRs::fromEntity).toList();
-    }
-
-    public AlbumRs get(Long id) {
-        final AlbumEntity entity = getEntity(id);
-        return AlbumRs.fromEntity(entity);
-    }
-
+    public AlbumService(AlbumRepository repo, ArtistService artistService) { this.repo=repo; this.artistService=artistService; }
+    @Transactional(readOnly = true)
+    public AlbumEntity getEntity(Long id) { return repo.findById(id).orElseThrow(() -> new NotFoundException("Album", id)); }
+    @Transactional(readOnly = true)
+    public List<AlbumRs> getAll() { return repo.findAll().stream().map(AlbumRs::fromEntity).toList(); }
+    @Transactional(readOnly = true)
+    public AlbumRs get(Long id) { return AlbumRs.fromEntity(getEntity(id)); }
+    @Transactional
     public AlbumRs create(AlbumRq dto) {
-        final ArtistEntity artist = artistService.getEntity(dto.artistId());
-        final AlbumEntity entity = new AlbumEntity();
-        entity.setTitle(dto.title());
-        entity.setYear(dto.year());
-        entity.setArtist(artist);
-        entity.setTrackCount(dto.trackCount());
-        entity.setCover(dto.cover());
-        return AlbumRs.fromEntity(repository.save(entity));
+        AlbumEntity e = new AlbumEntity();
+        e.setTitle(dto.title());
+        e.setYear(dto.year());
+        e.setTrackCount(dto.trackCount());
+        e.setCover(dto.cover());
+        e.setArtist(artistService.getEntity(dto.artistId()));
+        return AlbumRs.fromEntity(repo.saveAndFlush(e));
     }
-
+    @Transactional
     public AlbumRs update(Long id, AlbumRq dto) {
-        final ArtistEntity artist = artistService.getEntity(dto.artistId());
-        final AlbumEntity entity = getEntity(id);
-        entity.setTitle(dto.title());
-        entity.setYear(dto.year());
-        entity.setArtist(artist);
-        entity.setTrackCount(dto.trackCount());
-        entity.setCover(dto.cover());
-        return AlbumRs.fromEntity(repository.save(entity));
+        AlbumEntity e = getEntity(id);
+        e.setTitle(dto.title());
+        e.setYear(dto.year());
+        e.setTrackCount(dto.trackCount());
+        e.setCover(dto.cover());
+        e.setArtist(artistService.getEntity(dto.artistId()));
+        return AlbumRs.fromEntity(repo.saveAndFlush(e));
     }
-
+    @Transactional
     public AlbumRs delete(Long id) {
-        final AlbumEntity entity = getEntity(id);
-        repository.delete(entity);
-        return AlbumRs.fromEntity(entity);
+        AlbumEntity e = getEntity(id);
+        if (!e.getTracks().isEmpty())
+            throw new IllegalArgumentException("Нельзя удалить объект со связанными записями");
+        AlbumRs result = AlbumRs.fromEntity(e);
+        repo.delete(e);
+        repo.flush();
+        return result;
     }
+    @Transactional(readOnly = true)
+    public List<NamedCountProjection> stats(int year) { return repo.stats(year); }
 }
