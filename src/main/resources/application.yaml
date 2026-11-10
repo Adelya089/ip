@@ -14,3 +14,9 @@ spring:
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
+
+# ЛР 5: JWT — по примеру преподавателя
+jwt:
+  issuer: http://music-catalog.local/
+  access-ttl: 15m
+  refresh-ttl: 14d

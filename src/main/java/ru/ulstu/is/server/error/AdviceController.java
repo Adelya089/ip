@@ -28,6 +28,21 @@ public class AdviceController {
         return new ResponseEntity<>(new AdviceErrorBody(400, message), HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(org.springframework.security.core.AuthenticationException.class)
+    public ResponseEntity<AdviceErrorBody> handleAuthentication(org.springframework.security.core.AuthenticationException ex) {
+        return new ResponseEntity<>(new AdviceErrorBody(401, "Authentication required or invalid credentials"), HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+    public ResponseEntity<AdviceErrorBody> handleForbidden(org.springframework.security.access.AccessDeniedException ex) {
+        return new ResponseEntity<>(new AdviceErrorBody(403, "Access denied: insufficient role"), HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(ru.ulstu.is.server.error.InvalidValueException.class)
+    public ResponseEntity<AdviceErrorBody> handleInvalidValue(ru.ulstu.is.server.error.InvalidValueException ex) {
+        return new ResponseEntity<>(new AdviceErrorBody(400, ex.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<AdviceErrorBody> handleAnyException(HttpServletRequest request, Throwable ex) {
