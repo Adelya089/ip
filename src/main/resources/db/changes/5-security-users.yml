@@ -1,0 +1,95 @@
+databaseChangeLog:
+    - changeSet:
+          id: lab5-create-users-sequence
+          author: student
+          changes:
+              - createSequence:
+                    sequenceName: sec_users_seq
+                    startValue: 1
+                    incrementBy: 50
+    - changeSet:
+          id: lab5-create-users
+          author: student
+          changes:
+              - createTable:
+                    tableName: sec_users
+                    columns:
+                        - column:
+                              name: id
+                              type: BIGINT
+                              constraints:
+                                  primaryKey: true
+                                  nullable: false
+                        - column:
+                              name: login
+                              type: VARCHAR(20)
+                              constraints:
+                                  nullable: false
+                                  unique: true
+                        - column:
+                              name: password
+                              type: VARCHAR(100)
+                              constraints:
+                                  nullable: false
+                        - column:
+                              name: role
+                              type: VARCHAR(20)
+                              constraints:
+                                  nullable: false
+    - changeSet:
+          id: lab5-demo-admin
+          author: student
+          changes:
+              - insert:
+                    tableName: sec_users
+                    columns:
+                        - column:
+                              name: id
+                              valueSequenceNext: sec_users_seq
+                        - column:
+                              name: login
+                              value: admin
+                        - column:
+                              name: password
+                              value: $2y$10$4dC/sHlmvpqer9vGfeYtv.7R0wKUzai4kWFDDevc0x0tEfFF42Kti
+                        - column:
+                              name: role
+                              value: ADMIN
+    - changeSet:
+          id: lab5-demo-listener
+          author: student
+          changes:
+              - insert:
+                    tableName: sec_users
+                    columns:
+                        - column:
+                              name: id
+                              valueSequenceNext: sec_users_seq
+                        - column:
+                              name: login
+                              value: listener
+                        - column:
+                              name: password
+                              value: $2y$10$Ae.YU0VFz5q6k3f9QdpUE.1yckGe6SOoRaLvU9kI1qJc/MXVAE8tC
+                        - column:
+                              name: role
+                              value: USER
+    - changeSet:
+          id: lab5-demo-listener2
+          author: student
+          changes:
+              - insert:
+                    tableName: sec_users
+                    columns:
+                        - column:
+                              name: id
+                              valueSequenceNext: sec_users_seq
+                        - column:
+                              name: login
+                              value: listener2
+                        - column:
+                              name: password
+                              value: $2y$10$EAV0T0j/mq9Y/lJ16lCmqO0LZ.jRPuVbUj6r4coi2Sk.rKJBso6ke
+                        - column:
+                              name: role
+                              value: USER
