@@ -1,0 +1,242 @@
+databaseChangeLog:
+- changeSet:
+    id: 1793283843337-1
+    author: adely (generated)
+    changes:
+    - createSequence:
+        sequenceName: ALBUMS_SEQ
+- changeSet:
+    id: 1793283843337-2
+    author: adely (generated)
+    changes:
+    - createSequence:
+        sequenceName: ALBUM_ENTITY_SEQ
+- changeSet:
+    id: 1793283843337-3
+    author: adely (generated)
+    changes:
+    - createSequence:
+        sequenceName: ARTISTS_SEQ
+- changeSet:
+    id: 1793283843337-4
+    author: adely (generated)
+    changes:
+    - createSequence:
+        sequenceName: ARTIST_ENTITY_SEQ
+- changeSet:
+    id: 1793283843337-5
+    author: adely (generated)
+    changes:
+    - createSequence:
+        sequenceName: GENRES_SEQ
+- changeSet:
+    id: 1793283843337-6
+    author: adely (generated)
+    changes:
+    - createSequence:
+        sequenceName: GENRE_ENTITY_SEQ
+- changeSet:
+    id: 1793283843337-7
+    author: adely (generated)
+    changes:
+    - createSequence:
+        sequenceName: TRACKS_SEQ
+- changeSet:
+    id: 1793283843337-8
+    author: adely (generated)
+    changes:
+    - createSequence:
+        sequenceName: TRACK_ENTITY_SEQ
+- changeSet:
+    id: 1793283843337-9
+    author: adely (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: PK_ALBUMS
+            name: ID
+            type: BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: TITLE
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: RELEASE_YEAR
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: TRACK_COUNT
+            type: INT
+        - column:
+            name: COVER
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: ARTIST_ID
+            type: BIGINT
+        tableName: ALBUMS
+- changeSet:
+    id: 1793283843337-10
+    author: adely (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: PK_ARTISTS
+            name: ID
+            type: BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: NAME
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: COUNTRY
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: GENRE_ID
+            type: BIGINT
+        tableName: ARTISTS
+- changeSet:
+    id: 1793283843337-11
+    author: adely (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: PK_GENRES
+            name: ID
+            type: BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: NAME
+            type: VARCHAR(100)
+        tableName: GENRES
+- changeSet:
+    id: 1793283843337-12
+    author: adely (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: PK_TRACKS
+            name: ID
+            type: BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: TITLE
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: DURATION
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: ALBUM_ID
+            type: BIGINT
+        tableName: TRACKS
+- changeSet:
+    id: 1793283843337-13
+    author: adely (generated)
+    changes:
+    - createIndex:
+        associatedWith: ''
+        columns:
+        - column:
+            name: ARTIST_ID
+        indexName: FK_ALBUMS_ARTISTS_INDEX_7
+        tableName: ALBUMS
+- changeSet:
+    id: 1793283843337-14
+    author: adely (generated)
+    changes:
+    - createIndex:
+        associatedWith: ''
+        columns:
+        - column:
+            name: GENRE_ID
+        indexName: FK_ARTISTS_GENRES_INDEX_F
+        tableName: ARTISTS
+- changeSet:
+    id: 1793283843337-15
+    author: adely (generated)
+    changes:
+    - createIndex:
+        associatedWith: ''
+        columns:
+        - column:
+            name: ALBUM_ID
+        indexName: FK_TRACKS_ALBUMS_INDEX_9
+        tableName: TRACKS
+- changeSet:
+    id: 1793283843337-16
+    author: adely (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: ARTIST_ID
+        baseTableName: ALBUMS
+        constraintName: FK_ALBUMS_ARTISTS
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: ID
+        referencedTableName: ARTISTS
+        validate: true
+- changeSet:
+    id: 1793283843337-17
+    author: adely (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: GENRE_ID
+        baseTableName: ARTISTS
+        constraintName: FK_ARTISTS_GENRES
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: ID
+        referencedTableName: GENRES
+        validate: true
+- changeSet:
+    id: 1793283843337-18
+    author: adely (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: ALBUM_ID
+        baseTableName: TRACKS
+        constraintName: FK_TRACKS_ALBUMS
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: ID
+        referencedTableName: ALBUMS
+        validate: true
+

@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-sequences
+      author: student
+      changes:
+        - createSequence:
+            sequenceName: genre_entity_seq
+            startValue: 1
+            incrementBy: 50
+        - createSequence:
+            sequenceName: artist_entity_seq
+            startValue: 1
+            incrementBy: 50
+        - createSequence:
+            sequenceName: album_entity_seq
+            startValue: 1
+            incrementBy: 50
+        - createSequence:
+            sequenceName: track_entity_seq
+            startValue: 1
+            incrementBy: 50

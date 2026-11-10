@@ -1,8 +1,13 @@
 package ru.ulstu.is.server.service;
 
+
 import java.util.List;
+
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.ulstu.is.server.api.PageRs;
 import ru.ulstu.is.server.api.genre.*;
 import ru.ulstu.is.server.entity.*;
 import ru.ulstu.is.server.repository.GenreRepository;
@@ -14,6 +19,15 @@ import ru.ulstu.is.server.error.NotFoundException;
     public GenreEntity getEntity(Long id) { return repo.findById(id).orElseThrow(() -> new NotFoundException("Genre", id)); }
     @Transactional(readOnly = true)
     public List<GenreRs> getAll() { return repo.findAll().stream().map(GenreRs::fromEntity).toList(); }
+
+    @Transactional(readOnly = true)
+    public PageRs<GenreRs> getPage(int page, int size) {
+        var result = repo.findAll(
+                PageRequest.of(page, size, Sort.by("id"))
+        );
+        return PageRs.fromPage(result, GenreRs::fromEntity);
+    }
+
     @Transactional(readOnly = true)
     public GenreRs get(Long id) { return GenreRs.fromEntity(getEntity(id)); }
     @Transactional

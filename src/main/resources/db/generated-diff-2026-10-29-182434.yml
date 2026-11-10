@@ -1,0 +1,53 @@
+databaseChangeLog:
+- changeSet:
+    id: 1793283878733-2
+    author: adely (generated)
+    changes:
+    - addColumn:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+            name: trackCount
+            type: INT
+        tableName: albums
+- changeSet:
+    id: 1793283878733-3
+    author: adely (generated)
+    changes:
+    - dropColumn:
+        columnName: TRACK_COUNT
+        tableName: ALBUMS
+- changeSet:
+    id: 1793283878733-4
+    author: adely (generated)
+    changes:
+    - dropSequence:
+        sequenceName: ALBUM_ENTITY_SEQ
+- changeSet:
+    id: 1793283878733-5
+    author: adely (generated)
+    changes:
+    - dropSequence:
+        sequenceName: ARTIST_ENTITY_SEQ
+- changeSet:
+    id: 1793283878733-6
+    author: adely (generated)
+    changes:
+    - dropSequence:
+        sequenceName: GENRE_ENTITY_SEQ
+- changeSet:
+    id: 1793283878733-7
+    author: adely (generated)
+    changes:
+    - dropSequence:
+        sequenceName: TRACK_ENTITY_SEQ
+- changeSet:
+    id: 1793283878733-1
+    author: adely (generated)
+    changes:
+    - modifyDataType:
+        columnName: name
+        newDataType: varchar(255)
+        tableName: genres
+

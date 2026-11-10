@@ -4,6 +4,7 @@ package ru.ulstu.is.server.api.genre;
 import java.util.List;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
+import ru.ulstu.is.server.api.PageRs;
 import ru.ulstu.is.server.configuration.Constants;
 import ru.ulstu.is.server.service.GenreService;
 
@@ -15,11 +16,21 @@ public class GenreController {
     public GenreController(GenreService service) {
         this.service = service;
     }
-
-    @GetMapping
-    public List<GenreRs> getAll() {
+    @GetMapping("/all")
+    public List<GenreRs> getAllWithoutPagination() {
         return service.getAll();
     }
+
+    @GetMapping
+    public PageRs<GenreRs> getAll(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "3") int size) {
+        return service.getPage(
+                Math.max(page, 1) - 1,
+                Math.max(size, 1)
+        );
+    }
+
 
     @GetMapping("/stats")
     public List<GenreStatsRs> stats(

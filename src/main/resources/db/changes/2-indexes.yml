@@ -1,0 +1,23 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-catalog-indexes
+      author: student
+      changes:
+        - createIndex:
+            tableName: artists
+            indexName: idx_artist_genre_id
+            columns:
+              - column:
+                  name: genre_id
+        - createIndex:
+            tableName: albums
+            indexName: idx_album_artist_id
+            columns:
+              - column:
+                  name: artist_id
+        - createIndex:
+            tableName: tracks
+            indexName: idx_track_album_id
+            columns:
+              - column:
+                  name: album_id

@@ -1,0 +1,123 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-catalog-tables
+      author: student
+      changes:
+        - createTable:
+            tableName: genres
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                      primaryKey: true
+                      primaryKeyName: pk_genres
+                      nullable: false
+              - column:
+                  name: name
+                  type: varchar(100)
+                  constraints:
+                      nullable: false
+        - createTable:
+            tableName: artists
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                      primaryKey: true
+                      primaryKeyName: pk_artists
+                      nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                      nullable: false
+              - column:
+                  name: country
+                  type: varchar(255)
+                  constraints:
+                      nullable: false
+              - column:
+                  name: genre_id
+                  type: bigint
+                  constraints:
+                      nullable: false
+        - createTable:
+            tableName: albums
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                      primaryKey: true
+                      primaryKeyName: pk_albums
+                      nullable: false
+              - column:
+                  name: title
+                  type: varchar(255)
+                  constraints:
+                      nullable: false
+              - column:
+                  name: release_year
+                  type: integer
+                  constraints:
+                      nullable: false
+              - column:
+                  name: track_count
+                  type: integer
+                  constraints:
+                      nullable: false
+              - column:
+                  name: cover
+                  type: varchar(255)
+                  constraints:
+                      nullable: true
+              - column:
+                  name: artist_id
+                  type: bigint
+                  constraints:
+                      nullable: false
+        - createTable:
+            tableName: tracks
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                      primaryKey: true
+                      primaryKeyName: pk_tracks
+                      nullable: false
+              - column:
+                  name: title
+                  type: varchar(255)
+                  constraints:
+                      nullable: false
+              - column:
+                  name: duration
+                  type: integer
+                  constraints:
+                      nullable: false
+              - column:
+                  name: album_id
+                  type: bigint
+                  constraints:
+                      nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: artists
+            baseColumnNames: genre_id
+            referencedTableName: genres
+            referencedColumnNames: id
+            constraintName: fk_artists_genres
+        - addForeignKeyConstraint:
+            baseTableName: albums
+            baseColumnNames: artist_id
+            referencedTableName: artists
+            referencedColumnNames: id
+            constraintName: fk_albums_artists
+        - addForeignKeyConstraint:
+            baseTableName: tracks
+            baseColumnNames: album_id
+            referencedTableName: albums
+            referencedColumnNames: id
+            constraintName: fk_tracks_albums

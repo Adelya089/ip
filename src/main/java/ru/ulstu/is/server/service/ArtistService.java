@@ -1,8 +1,12 @@
 package ru.ulstu.is.server.service;
 
 import java.util.List;
+
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.ulstu.is.server.api.PageRs;
 import ru.ulstu.is.server.api.artist.*;
 import ru.ulstu.is.server.entity.*;
 import ru.ulstu.is.server.repository.ArtistRepository;
@@ -15,6 +19,15 @@ import ru.ulstu.is.server.error.NotFoundException;
     public ArtistEntity getEntity(Long id) { return repo.findById(id).orElseThrow(() -> new NotFoundException("Artist", id)); }
     @Transactional(readOnly = true)
     public List<ArtistRs> getAll() { return repo.findAll().stream().map(ArtistRs::fromEntity).toList(); }
+
+    @Transactional(readOnly = true)
+    public PageRs<ArtistRs> getPage(int page, int size) {
+        var result = repo.findAll(
+                PageRequest.of(page, size, Sort.by("id"))
+        );
+        return PageRs.fromPage(result, ArtistRs::fromEntity);
+    }
+
     @Transactional(readOnly = true)
     public ArtistRs get(Long id) { return ArtistRs.fromEntity(getEntity(id)); }
     @Transactional

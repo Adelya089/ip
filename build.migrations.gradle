@@ -1,0 +1,49 @@
+
+logger.quiet("Configure migrations generator")
+
+dependencies {
+    liquibaseRuntime "org.liquibase.ext:liquibase-hibernate7:5.0.3"
+}
+
+liquibase {
+    activities {
+        main {
+            referenceUrl "hibernate:spring:ru.ulstu.is.server.entity?dialect=org.hibernate.dialect.H2Dialect"
+        }
+    }
+}
+
+def applyDynamicChangelog = { Object activity, String prefix ->
+    def timestamp = new Date().format("yyyy-MM-dd-HHmmss")
+    def path = "src/main/resources/db/${prefix}-${timestamp}.yml"
+    activity.changelogFile(path)
+}
+
+gradle.taskGraph.whenReady { taskGraph ->
+    if (taskGraph.hasTask(":generateFull") ||
+            taskGraph.hasTask(":generateChangelog")) {
+
+        liquibase.activities.main { activity ->
+            applyDynamicChangelog(activity, "generated-full")
+        }
+
+    } else if (taskGraph.hasTask(":generateDiff") ||
+            taskGraph.hasTask(":diffChangelog")) {
+
+        liquibase.activities.main { activity ->
+            applyDynamicChangelog(activity, "generated-diff")
+        }
+    }
+}
+
+tasks.register("generateFull") {
+    group = "migrations"
+    description = "Generate changelog from existing database"
+    dependsOn tasks.named("generateChangelog")
+}
+
+tasks.register("generateDiff") {
+    group = "migrations"
+    description = "Generate diff between DB and JPA entities"
+    dependsOn tasks.named("diffChangelog")
+}

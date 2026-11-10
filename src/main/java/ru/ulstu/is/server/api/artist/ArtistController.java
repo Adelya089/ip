@@ -4,6 +4,7 @@ package ru.ulstu.is.server.api.artist;
 import java.util.List;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
+import ru.ulstu.is.server.api.PageRs;
 import ru.ulstu.is.server.configuration.Constants;
 import ru.ulstu.is.server.service.ArtistService;
 
@@ -16,10 +17,22 @@ public class ArtistController {
         this.service = service;
     }
 
+
     @GetMapping
-    public List<ArtistRs> getAll() {
+    public PageRs<ArtistRs> getAll(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "3") int size) {
+        return service.getPage(
+                Math.max(page, 1) - 1,
+                Math.max(size, 1)
+        );
+    }
+
+    @GetMapping("/all")
+    public List<ArtistRs> getAllWithoutPagination() {
         return service.getAll();
     }
+
 
     @GetMapping("/stats")
     public List<ArtistStatsRs> stats(

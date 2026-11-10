@@ -1,0 +1,25 @@
+
+databaseChangeLog:
+  - changeSet:
+      id: create-hibernate-sequences
+      author: student
+      changes:
+        - createSequence:
+            sequenceName: genres_seq
+            startValue: 1
+            incrementBy: 50
+
+        - createSequence:
+            sequenceName: artists_seq
+            startValue: 1
+            incrementBy: 50
+
+        - createSequence:
+            sequenceName: albums_seq
+            startValue: 1
+            incrementBy: 50
+
+        - createSequence:
+            sequenceName: tracks_seq
+            startValue: 1
+            incrementBy: 50
