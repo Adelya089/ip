@@ -10,6 +10,8 @@ public class ArtistEntity extends BaseEntity {
     private String name;
     @Column(nullable = false)
     private String country;
+    @Column(length = 255)
+    private String photo;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name="genre_id", nullable=false)
     private GenreEntity genre;
@@ -19,6 +21,8 @@ public class ArtistEntity extends BaseEntity {
     public void setName(String value) { this.name = value; }
     public String getCountry() { return country; }
     public void setCountry(String value) { this.country = value; }
+    public String getPhoto() { return photo; }
+    public void setPhoto(String value) { this.photo = value; }
     public List<AlbumEntity> getAlbums() { return Collections.unmodifiableList(albums); }
     public void addAlbum(AlbumEntity value) { value.setArtist(this); }
     public void removeAlbum(AlbumEntity value) { if (albums.contains(value)) value.setArtist(null); }

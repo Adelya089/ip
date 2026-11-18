@@ -17,6 +17,12 @@ public class UserEntity extends BaseEntity {
     @Column(nullable = false, length = 20)
     private UserRole role;
 
+    @Column(nullable = false)
+    private boolean enabled = true;
+
+    public boolean isEnabled() { return enabled; }
+    public void setEnabled(boolean enabled) { this.enabled = enabled; }
+
     public String getLogin() {
         return login;
     }

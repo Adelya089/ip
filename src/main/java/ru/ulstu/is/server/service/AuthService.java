@@ -103,6 +103,7 @@ public class AuthService {
             throw new InvalidValueException(REFRESH_TOKEN_ERROR);
         }
         final UserPrincipal currentUser = userService.getCurrentUserByLogin(stored.username());
+        if (!currentUser.isEnabled()) throw new InvalidValueException("Account is blocked");
         final String access = createAccessToken(stored.username(),
                 SecurityUtils.getRoles(currentUser.getAuthorities()));
         return new Tokens(access, refreshToken, jwtProperties.getAccessTtl().toSeconds());
@@ -113,6 +114,7 @@ public class AuthService {
                 new StoredToken(stored.username(), stored.familyId(), stored.expiresAt(), Instant.now()));
 
         final UserPrincipal currentUser = userService.getCurrentUserByLogin(stored.username());
+        if (!currentUser.isEnabled()) throw new InvalidValueException("Account is blocked");
         final String access = createAccessToken(stored.username(),
                 SecurityUtils.getRoles(currentUser.getAuthorities()));
         final String refresh = createRefreshToken(stored.username(), stored.familyId());

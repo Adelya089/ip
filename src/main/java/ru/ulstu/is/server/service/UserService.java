@@ -34,7 +34,7 @@ public class UserService implements UserDetailsService {
         UserEntity user = new UserEntity();
         user.setLogin(dto.login());
         user.setPassword(passwordEncoder.encode(dto.password()));
-        user.setRole(UserRole.USER); // публичная регистрация не может выдать роль ADMIN
+        user.setRole(UserRole.USER);
         return UserRs.fromEntity(repository.save(user));
     }
 

@@ -50,6 +50,11 @@ public class SecurityConfiguration {
         return jwt -> {
             final String username = jwt.getSubject();
             final UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+            if (!userDetails.isEnabled()) {
+                throw new org.springframework.security.authentication.DisabledException("Account is blocked");
+            }
+
             return new UsernamePasswordAuthenticationToken(
                     userDetails,
                     jwt,
@@ -79,6 +84,7 @@ public class SecurityConfiguration {
 
         http
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(Constants.API_URL + "/admin/**").hasRole(UserRole.ADMIN.name())
                         .requestMatchers(AuthController.URL + "/whoami").authenticated()
                         .requestMatchers(AuthController.URL + "/**").permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.POST, Constants.API_URL + "/**").hasRole(UserRole.ADMIN.name())
@@ -119,7 +125,7 @@ public class SecurityConfiguration {
     UrlBasedCorsConfigurationSource corsConfigurationSource() {
         final CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList(Constants.DEV_ORIGIN));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

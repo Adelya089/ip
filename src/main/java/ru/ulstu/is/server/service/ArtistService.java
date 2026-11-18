@@ -11,6 +11,7 @@ import ru.ulstu.is.server.api.artist.*;
 import ru.ulstu.is.server.entity.*;
 import ru.ulstu.is.server.repository.ArtistRepository;
 import ru.ulstu.is.server.error.NotFoundException;
+import ru.ulstu.is.server.error.InvalidValueException;
 @Service public class ArtistService {
     private final ArtistRepository repo;
     private final GenreService genreService;
@@ -35,6 +36,7 @@ import ru.ulstu.is.server.error.NotFoundException;
         ArtistEntity e = new ArtistEntity();
         e.setName(dto.name());
         e.setCountry(dto.country());
+        e.setPhoto(normalizePhoto(dto.photo()));
         e.setGenre(genreService.getEntity(dto.genreId()));
         return ArtistRs.fromEntity(repo.saveAndFlush(e));
     }
@@ -43,6 +45,7 @@ import ru.ulstu.is.server.error.NotFoundException;
         ArtistEntity e = getEntity(id);
         e.setName(dto.name());
         e.setCountry(dto.country());
+        e.setPhoto(normalizePhoto(dto.photo()));
         e.setGenre(genreService.getEntity(dto.genreId()));
         return ArtistRs.fromEntity(repo.saveAndFlush(e));
     }
@@ -56,6 +59,16 @@ import ru.ulstu.is.server.error.NotFoundException;
         repo.flush();
         return result;
     }
+    private String normalizePhoto(String photo) {
+        if (photo == null || photo.isBlank()) return null;
+        String value = photo.trim();
+        if (value.length() > 255 || !(value.startsWith("https://") ||
+                value.startsWith("http://") || value.startsWith("/artists/"))) {
+            throw new InvalidValueException("Укажите ссылку на фото или /artists/имя-файла");
+        }
+        return value;
+    }
+
     @Transactional(readOnly = true)
     public List<NamedCountProjection> stats(String filter) { return repo.stats(filter); }
 }

@@ -23,7 +23,7 @@ public class AdviceController {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<AdviceErrorBody> handleValidation(HttpServletRequest request, MethodArgumentNotValidException ex) {
         final String message = ex.getBindingResult().getFieldErrors().stream()
-                .map(err -> err.getDefaultMessage())
+                .map(err -> err.getField() + ": " + err.getDefaultMessage())
                 .collect(Collectors.joining("; "));
         return new ResponseEntity<>(new AdviceErrorBody(400, message), HttpStatus.BAD_REQUEST);
     }

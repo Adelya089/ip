@@ -8,4 +8,5 @@ import ru.ulstu.is.server.entity.UserEntity;
 
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
     Optional<UserEntity> findByLoginIgnoreCase(String login);
+    long countByRoleAndEnabledTrue(ru.ulstu.is.server.entity.UserRole role);
 }

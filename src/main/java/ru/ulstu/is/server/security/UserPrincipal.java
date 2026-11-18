@@ -34,7 +34,7 @@ public class UserPrincipal implements UserDetails {
         this.username = user.getLogin();
         this.password = user.getPassword();
         this.roles = Set.of(user.getRole());
-        this.active = true;
+        this.active = user.isEnabled();
     }
 
     public static UserPrincipal anonymous() {

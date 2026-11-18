@@ -1,6 +1,8 @@
 package ru.ulstu.is.server.service;
 
 import java.util.List;
+import java.time.Year;
+import ru.ulstu.is.server.error.InvalidValueException;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -32,21 +34,22 @@ import ru.ulstu.is.server.error.NotFoundException;
     public AlbumRs get(Long id) { return AlbumRs.fromEntity(getEntity(id)); }
     @Transactional
     public AlbumRs create(AlbumRq dto) {
+        validateAlbum(dto);
         AlbumEntity e = new AlbumEntity();
-        e.setTitle(dto.title());
+        e.setTitle(dto.title().trim());
         e.setYear(dto.year());
-        e.setTrackCount(dto.trackCount());
-        e.setCover(dto.cover());
+        e.setTrackCount(0);
+        e.setCover(normalizeCover(dto.cover()));
         e.setArtist(artistService.getEntity(dto.artistId()));
         return AlbumRs.fromEntity(repo.saveAndFlush(e));
     }
     @Transactional
     public AlbumRs update(Long id, AlbumRq dto) {
+        validateAlbum(dto);
         AlbumEntity e = getEntity(id);
-        e.setTitle(dto.title());
+        e.setTitle(dto.title().trim());
         e.setYear(dto.year());
-        e.setTrackCount(dto.trackCount());
-        e.setCover(dto.cover());
+        e.setCover(normalizeCover(dto.cover()));
         e.setArtist(artistService.getEntity(dto.artistId()));
         return AlbumRs.fromEntity(repo.saveAndFlush(e));
     }
@@ -60,6 +63,25 @@ import ru.ulstu.is.server.error.NotFoundException;
         repo.flush();
         return result;
     }
+    private void validateAlbum(AlbumRq dto) {
+        if (dto.title() == null || dto.title().trim().length() < 2 || dto.title().trim().length() > 100) {
+            throw new InvalidValueException("Название должно содержать от 2 до 100 символов");
+        }
+        if (dto.year() == null || dto.year() < 1980 || dto.year() > Year.now().getValue()) {
+            throw new InvalidValueException("Год должен быть от 1980 до текущего года");
+        }
+        normalizeCover(dto.cover());
+    }
+
+    private String normalizeCover(String cover) {
+        if (cover == null || cover.isBlank()) return null;
+        String value = cover.trim();
+        if (value.length() > 255 || !(value.startsWith("https://") || value.startsWith("http://") || value.startsWith("/covers/"))) {
+            throw new InvalidValueException("Укажите ссылку на изображение или /covers/имя-файла");
+        }
+        return value;
+    }
+
     @Transactional(readOnly = true)
     public List<NamedCountProjection> stats(int year) { return repo.stats(year); }
 }
